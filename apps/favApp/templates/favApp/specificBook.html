@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>specificBook.html</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'favApp/css/home.css' %}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <a class="navbar-brand" href="/books">Book App</a>
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Welcome: {{request.session.username}}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </nav>
+    {% if request.session.userid == book.uploadedBy.id %}
+        <div class="container">
+            <div class="part col-md-6 col-sm-12">
+                <div class="left">
+                    <div class="topright">
+                        <h2>Update Book:</h2>
+                        <form action="/update" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <input type="text" name="title" value="{{book.title}}">
+                            </div>
+                            <p>Added by You!</p>
+                            <p>Added On: {{book.createdAt}} </p>
+                            <p>Last Updated on: {{book.updatedAt}}</p>
+                            <div class="form-group">
+                                <textarea name="desc" id="desc" rows="6">{{book.desc}}</textarea>
+                            </div>
+                            <input type="hidden" name="bookID" value="{{book.id}}">
+                            <button name="update" value="update">Update Book</button>
+                            <button class="bg-danger" name="delete" value="delete">Delete Book</button>
+                            {% if messages %}
+                            <ul class="messages">
+                                {% for message in messages %}
+                                <li class="errorMessage" {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="bookDetails part right col-md-4 col-sm-12">
+                <h2>Users Who Like This Book:</h2>
+                    <ul>
+                        {% for user in book.usersWhoLike.all %}
+                        <li> {{user.username}}</li>
+                        {% endfor %}
+                    </ul>
+                    {% if currentUser in book.usersWhoLike.all %}
+                        <form action="/unfavorite" method="POST">
+                            {% csrf_token %}
+                            <button>Unfavorite</button>
+                            <input type="hidden" name="bookID" value="{{book.id}}">
+                        </form>
+                    {% else %}
+                        <form action="/addFavorite" method="POST">
+                            {% csrf_token %}
+                            <button>Add To Favorites</button>
+                            <input type="hidden" name="bookID" value="{{book.id}}">
+                        </form>
+                    {% endif %}
+            </div>
+        </div>
+    {% endif %}
+    {% if request.session.userid != book.uploadedBy.id %}
+        <div class="container">
+            <div class="part col-md-6 col-sm-12">
+                <div class="left">
+                    <div class="topright">
+                        <h2>Book: {{book.title}}</h2>
+                            <p>Added By: {{book.uploadedBy.username}}</p>
+                            <p>Added On: {{book.createdAt}}</p>
+                            <p>Last Updated on: {{book.updatedAt}}</p>
+                            <p>Description: {{book.desc}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bookDetails part right col-md-4 col-sm-12">
+                <h2>Users Who Liked This Book</h2>
+                <ul>
+                    {% for user in book.usersWhoLike.all %}
+                    <li>{{user.username}}</li>
+                    {% endfor %}
+                </ul>
+                {% if currentUser in book.usersWhoLike.all %}
+                    <form action="/unfavorite" method="POST">
+                        {% csrf_token %}
+                        <button>Unfavorite</button>
+                        <input type="hidden" name="bookID" value="{{book.id}}">
+                    </form>
+                {% else %}
+                    <form action="/addFavorite" method="POST">
+                        {% csrf_token %}
+                        <button>Add To Favorites</button>
+                        <input type="hidden" name="bookID" value="{{book.id}}">
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+</body>

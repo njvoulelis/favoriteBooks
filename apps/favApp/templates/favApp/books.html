@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Books.html</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'favApp/css/home.css' %}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <a class="navbar-brand" href="#">Book App</a>
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Welcome: {{request.session.username}}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="part col-md-6 col-sm-12">
+            <div class="left">
+                <div class="topright">
+                    <h2>Add Favorite Book:</h2>
+                    <form action="/addBook" method="POST">
+                        {% csrf_token %}
+                        <div class="identifer">Title:</div>
+                        <div class="form-group">
+                            <input type="text" name="title">
+                        </div>
+                        <div class="identifer">Description:</div>
+                        <div class="form-group">
+                            <textarea name="desc" id="desc" rows="6"></textarea>
+                        </div>
+                        <button>Add Book</button>
+                        {% if messages %}
+                            <ul class="messages">
+                                {% for message in messages %}
+                                <li class="errorMessage" {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="part right col-md-4 col-sm-12">
+            <div class="bookDetails">
+                <h2>All books:</h2>
+                {% for book in books reversed %}
+                    <a href="books/{{book.id}}">{{book.title}}</a>
+                    <h5>Added by: {{book.uploadedBy.username}}</h5>
+                        {% if request.session.userid == book.uploadedBy.id %}
+                            <p>You uploaded this</p>
+                        {% endif %}
+                        {% if currentUser in book.usersWhoLike.all %}
+                            <form action="/unfavorite" method="POST">
+                                {% csrf_token %}
+                                <button>Unfavorite</button>
+                                <input type="hidden" name="bookID" value="{{book.id}}">
+                            </form>
+                        {% else %}
+                            <form action="/addFavorite" method="POST">
+                                {% csrf_token %}
+                                <button>Add To Favorites</button>
+                                <input type="hidden" name="bookID" value="{{book.id}}">
+                            </form>
+                        {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="part right"></div>
+</body>
+</html>

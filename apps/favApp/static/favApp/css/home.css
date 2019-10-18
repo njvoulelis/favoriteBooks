@@ -1,0 +1,32 @@
+h1{
+    color: blue;
+}
+
+.part{
+    display: inline-block;
+    vertical-align: top;
+}
+form > input{
+    display: block;
+}
+
+.right{
+    text-align: right;
+}
+.bookDetails{
+    text-align: left;
+}
+
+h2{
+    margin: 10px 0px 10px;
+}
+.bookDetails > a{
+    font-size: 140%;
+}
+
+input, textarea{
+    width: 80%;
+}
+.errorMessage{
+    color: red;
+}
